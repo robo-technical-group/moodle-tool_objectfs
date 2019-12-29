@@ -79,5 +79,19 @@ function xmldb_tool_objectfs_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017111700, 'tool', 'objectfs');
     }
 
+    if ($oldversion < 2019122800) {
+
+        // Define index location-timeduplicated (not unique) to be added to tool_objectfs_objects.
+        $table = new xmldb_table('tool_objectfs_objects');
+        $index = new xmldb_index('location-timeduplicated', XMLDB_INDEX_NOTUNIQUE, ['location', 'timeduplicated']);
+
+        // Conditionally launch add index location-timeduplicated.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Objectfs savepoint reached.
+        upgrade_plugin_savepoint(true, 2019122800, 'tool', 'objectfs');
+    }
     return true;
 }
